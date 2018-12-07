@@ -10,8 +10,9 @@ use std::{fs, path::Path, process::Command, result};
 
 pub type Result<T> = result::Result<T, errors::Error>;
 
-pub fn get_track_root() -> Result<String> {
+pub fn get_track_root(track_dir: &Path) -> Result<String> {
     let rev_parse_output = Command::new("git")
+        .current_dir(track_dir)
         .args(&["rev-parse", "--show-toplevel"])
         .output()?;
 
@@ -20,8 +21,8 @@ pub fn get_track_root() -> Result<String> {
         .to_string())
 }
 
-pub fn get_config_value() -> Result<Value> {
-    let track_root = get_track_root()?;
+pub fn get_config_value(track_dir: &Path) -> Result<Value> {
+    let track_root = get_track_root(track_dir)?;
 
     let config_path = Path::new(&track_root).join("config.json");
 

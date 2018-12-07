@@ -7,12 +7,12 @@ struct RustVersionReader;
 struct HaskellVersionReader;
 
 trait GetLocalVersion {
-    fn get_local_version(&self, exercise_name: &str) -> xtodo::Result<String>;
+    fn get_local_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String>;
 }
 
 impl GetLocalVersion for RustVersionReader {
-    fn get_local_version(&self, exercise_name: &str) -> xtodo::Result<String> {
-        let track_root = xtodo::get_track_root()?;
+    fn get_local_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String> {
+        let track_root = xtodo::get_track_root(track_dir)?;
 
         let cargo_toml_path = Path::new(&track_root)
             .join("exercises")
@@ -31,8 +31,8 @@ impl GetLocalVersion for RustVersionReader {
 }
 
 impl GetLocalVersion for HaskellVersionReader {
-    fn get_local_version(&self, exercise_name: &str) -> xtodo::Result<String> {
-        let track_root = xtodo::get_track_root()?;
+    fn get_local_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String> {
+        let track_root = xtodo::get_track_root(track_dir)?;
 
         let package_yaml_path = Path::new(&track_root)
             .join("exercises")
@@ -87,8 +87,8 @@ fn get_version_reader(track_name: &str) -> Option<Box<GetLocalVersion>> {
     }
 }
 
-pub fn list_outdated_exercises() -> xtodo::Result<()> {
-    let config = xtodo::get_config_value()?;
+pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
+    let config = xtodo::get_config_value(track_dir)?;
 
     let track_name = config.get("language").unwrap().as_str().unwrap();
 
@@ -120,7 +120,7 @@ pub fn list_outdated_exercises() -> xtodo::Result<()> {
     for exercise in &mut exercises {
         let name = &exercise.name;
 
-        exercise.local_version = match version_reader.get_local_version(name) {
+        exercise.local_version = match version_reader.get_local_version(name, track_dir) {
             Ok(local_version) => Some(local_version),
             Err(err) => {
                 println!(

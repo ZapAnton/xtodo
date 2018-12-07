@@ -15,11 +15,26 @@ Tracks that support the `outdated` command:
 
 ## Usage
 
-The utility is used from the corresponding track repository.
-For example, to get the outdated exercises on the Rust track the following steps must be used:
+The utility works with the track repositories located on your local machine.
+
+Use the `-d`/`--track-dir` flag to show the path to the corresponding track.
+By default the flag is set to the current directory.
+
+For example, to get the outdated exercises on the Rust track, the following steps could be used:
+
 ```shell
-git clone https://github.com/exercism/rust.git # If you do not have the Rust track repository on your machine
-cd rust
+git clone https://github.com/exercism/rust.git /local/path/to/rust/track # If you do not have the Rust track repository on your machine
+
+xtodo -d /local/path/to/rust/track outdated
+```
+
+or
+
+```shell
+git clone https://github.com/exercism/rust.git /local/path/to/rust/track # If you do not have the Rust track repository on your machine
+
+cd /local/path/to/rust/track
+
 xtodo outdated
 ```
 
