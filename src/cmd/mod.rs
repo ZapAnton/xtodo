@@ -1,10 +1,12 @@
 mod missing;
 mod outdated;
 
-pub fn list_missing_exercises() -> xtodo::Result<()> {
-    missing::list_missing_exercises()
+use std::path::Path;
+
+pub fn list_missing_exercises(track_dir: &Path) -> xtodo::Result<()> {
+    missing::list_missing_exercises(track_dir)
 }
 
-pub fn list_outdated_exercises() -> xtodo::Result<()> {
-    outdated::list_outdated_exercises()
+pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
+    outdated::list_outdated_exercises(track_dir)
 }
