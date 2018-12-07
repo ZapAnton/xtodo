@@ -1,7 +1,7 @@
-extern crate failure;
+use failure;
 #[macro_use]
 extern crate failure_derive;
-extern crate serde_json;
+use serde_json;
 
 pub mod errors;
 

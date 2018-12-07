@@ -79,7 +79,7 @@ fn get_canonical_version(exercise_name: &str) -> xtodo::Result<String> {
         .unwrap())
 }
 
-fn get_version_reader(track_name: &str) -> Option<Box<GetLocalVersion>> {
+fn get_version_reader(track_name: &str) -> Option<Box<dyn GetLocalVersion>> {
     match track_name.to_lowercase().as_ref() {
         "rust" => Some(Box::new(RustVersionReader)),
         "haskell" => Some(Box::new(HaskellVersionReader)),
@@ -113,9 +113,11 @@ pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
         .iter()
         .filter(|exercise| {
             !(exercise.get("deprecated").is_some() && exercise["deprecated"].as_bool().unwrap())
-        }).map(|exercise_value| {
+        })
+        .map(|exercise_value| {
             ExerciseInfo::new(exercise_value.get("slug").unwrap().as_str().unwrap())
-        }).collect();
+        })
+        .collect();
 
     for exercise in &mut exercises {
         let name = &exercise.name;
@@ -149,7 +151,8 @@ pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
             exercise.local_version.is_some()
                 && exercise.canonical_version.is_some()
                 && exercise.local_version != exercise.canonical_version
-        }).collect();
+        })
+        .collect();
 
     println!(
         "\nOutdated exercises for the {} track:\n{}",
@@ -163,7 +166,8 @@ pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
                 exercise.name,
                 exercise.local_version.as_ref().unwrap(),
                 exercise.canonical_version.as_ref().unwrap()
-            )).collect::<Vec<String>>()
+            ))
+            .collect::<Vec<String>>()
             .join("\n")
     );
 

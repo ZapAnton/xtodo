@@ -1,9 +1,3 @@
-extern crate clap;
-extern crate reqwest;
-extern crate serde_json;
-extern crate serde_yaml;
-extern crate toml;
-
 mod cmd;
 
 use clap::{App, Arg, ArgMatches, SubCommand};
@@ -29,7 +23,7 @@ fn init_app<'a>() -> ArgMatches<'a> {
         ).get_matches()
 }
 
-fn process_matches(matches: &ArgMatches) -> xtodo::Result<()> {
+fn process_matches(matches: &ArgMatches<'_>) -> xtodo::Result<()> {
     let track_dir = Path::new(matches.value_of("track_dir").unwrap());
 
     match matches.subcommand() {

@@ -3,6 +3,7 @@ name = "xtodo"
 version = "0.2.0"
 authors = ["ZapAnton <wc3ft2@gmail.com>"]
 description = "An utility to track outdated or unimplemented exercises on the various Exercism tracks"
+edition = "2018"
 
 [dependencies]
 clap = "2.32.0"

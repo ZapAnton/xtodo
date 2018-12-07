@@ -4,7 +4,8 @@ use std::{collections::HashSet, path::Path};
 fn get_existing_exercises() -> xtodo::Result<HashSet<String>> {
     let existing_exercise_dirs: Value = reqwest::get(
         "https://api.github.com/repos/exercism/problem-specifications/contents/exercises/",
-    )?.json()?;
+    )?
+    .json()?;
 
     Ok(existing_exercise_dirs
         .as_array()
@@ -17,7 +18,8 @@ fn get_existing_exercises() -> xtodo::Result<HashSet<String>> {
                 .as_str()
                 .unwrap()
                 .to_string()
-        }).collect())
+        })
+        .collect())
 }
 
 fn get_implemented_exercises(config: &Value) -> HashSet<String> {
