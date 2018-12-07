@@ -45,7 +45,5 @@ Install the latest stable version of the [Rust programming language](https://www
 After that:
 
 ```shell
-git clone https://github.com/ZapAnton/xtodo.git
-cd xtodo
-cargo install --path .
+cargo install --git https://github.com/ZapAnton/xtodo.git
 ```
