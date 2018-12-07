@@ -40,7 +40,7 @@ xtodo outdated
 
 ## Installation
 
-Install the latest stable version of the [Rust programming language](https://www.rust-lang.org/en-US/) (for instance via [rustup](https://rustup.rs/)).
+Install the latest stable version of the [Rust programming language](https://www.rust-lang.org/) (for instance via [rustup](https://rustup.rs/)).
 
 After that:
 
