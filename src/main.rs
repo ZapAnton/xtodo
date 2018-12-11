@@ -35,18 +35,20 @@ fn process_matches(matches: &ArgMatches<'_>) -> xtodo::Result<()> {
         .value_of("spec_dir")
         .map(|spec_dir| Path::new(spec_dir));
 
-    match matches.subcommand() {
-        ("missing", _) => cmd::list_missing_exercises(&track_dir, spec_dir),
+    let command = match matches.subcommand() {
+        ("missing", _) => cmd::Cmd::Missing,
 
-        ("outdated", _) => cmd::list_outdated_exercises(&track_dir, spec_dir),
+        ("outdated", _) => cmd::Cmd::Outdated,
 
         ("", _) => {
             println!("No subcommand was used.\nUse 'xtodo help' to learn about the possible subcommands.");
-            Ok(())
+            return Ok(());
         }
 
         _ => unreachable!(),
-    }
+    };
+
+    cmd::run_command(&command, &track_dir, spec_dir)
 }
 
 fn main() -> xtodo::Result<()> {
