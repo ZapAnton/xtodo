@@ -70,8 +70,17 @@ impl ExerciseInfo {
     }
 }
 
-fn get_canonical_version(exercise_name: &str) -> xtodo::Result<String> {
-    let canonical_data: JsonValue = reqwest::get(&format!("https://raw.githubusercontent.com/exercism/problem-specifications/master/exercises/{}/canonical-data.json", exercise_name))?.json()?;
+fn get_canonical_version(exercise_name: &str, spec_dir: Option<&Path>) -> xtodo::Result<String> {
+    let canonical_data: JsonValue = if let Some(spec_dir) = spec_dir {
+        let canonical_path = spec_dir
+            .join("exercises")
+            .join(exercise_name)
+            .join("canonical-data.json");
+
+        serde_json::from_str(&fs::read_to_string(canonical_path)?)?
+    } else {
+        reqwest::get(&format!("https://raw.githubusercontent.com/exercism/problem-specifications/master/exercises/{}/canonical-data.json", exercise_name))?.json()?
+    };
 
     Ok(canonical_data
         .get("version")
@@ -87,7 +96,7 @@ fn get_version_reader(track_name: &str) -> Option<Box<dyn GetLocalVersion>> {
     }
 }
 
-pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
+pub fn list_outdated_exercises(track_dir: &Path, spec_dir: Option<&Path>) -> xtodo::Result<()> {
     let config = xtodo::get_config_value(track_dir)?;
 
     let track_name = config.get("language").unwrap().as_str().unwrap();
@@ -133,7 +142,7 @@ pub fn list_outdated_exercises(track_dir: &Path) -> xtodo::Result<()> {
             }
         };
 
-        exercise.canonical_version = match get_canonical_version(name) {
+        exercise.canonical_version = match get_canonical_version(name, spec_dir) {
             Ok(canonical_version) => Some(canonical_version),
             Err(err) => {
                 println!(

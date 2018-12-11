@@ -38,7 +38,7 @@ fn process_matches(matches: &ArgMatches<'_>) -> xtodo::Result<()> {
     match matches.subcommand() {
         ("missing", _) => cmd::list_missing_exercises(&track_dir, spec_dir),
 
-        ("outdated", _) => cmd::list_outdated_exercises(&track_dir),
+        ("outdated", _) => cmd::list_outdated_exercises(&track_dir, spec_dir),
 
         ("", _) => {
             println!("No subcommand was used.\nUse 'xtodo help' to learn about the possible subcommands.");
