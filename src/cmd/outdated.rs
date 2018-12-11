@@ -6,12 +6,12 @@ use toml::Value as TomlValue;
 struct RustVersionReader;
 struct HaskellVersionReader;
 
-trait GetLocalVersion {
-    fn get_local_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String>;
+trait GetTrackVersion {
+    fn get_track_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String>;
 }
 
-impl GetLocalVersion for RustVersionReader {
-    fn get_local_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String> {
+impl GetTrackVersion for RustVersionReader {
+    fn get_track_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String> {
         let track_root = xtodo::get_track_root(track_dir)?;
 
         let cargo_toml_path = Path::new(&track_root)
@@ -30,8 +30,8 @@ impl GetLocalVersion for RustVersionReader {
     }
 }
 
-impl GetLocalVersion for HaskellVersionReader {
-    fn get_local_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String> {
+impl GetTrackVersion for HaskellVersionReader {
+    fn get_track_version(&self, exercise_name: &str, track_dir: &Path) -> xtodo::Result<String> {
         let track_root = xtodo::get_track_root(track_dir)?;
 
         let package_yaml_path = Path::new(&track_root)
@@ -56,7 +56,7 @@ impl GetLocalVersion for HaskellVersionReader {
 #[derive(Debug)]
 struct ExerciseInfo {
     name: String,
-    local_version: Option<String>,
+    track_version: Option<String>,
     canonical_version: Option<String>,
 }
 
@@ -64,7 +64,7 @@ impl ExerciseInfo {
     fn new(name: &str) -> Self {
         ExerciseInfo {
             name: name.to_string(),
-            local_version: None,
+            track_version: None,
             canonical_version: None,
         }
     }
@@ -88,7 +88,7 @@ fn get_canonical_version(exercise_name: &str, spec_dir: Option<&Path>) -> xtodo:
         .unwrap())
 }
 
-fn get_version_reader(track_name: &str) -> Option<Box<dyn GetLocalVersion>> {
+fn get_version_reader(track_name: &str) -> Option<Box<dyn GetTrackVersion>> {
     match track_name.to_lowercase().as_ref() {
         "rust" => Some(Box::new(RustVersionReader)),
         "haskell" => Some(Box::new(HaskellVersionReader)),
@@ -105,7 +105,7 @@ pub fn list_outdated_exercises(track_dir: &Path, spec_dir: Option<&Path>) -> xto
 
     if version_reader.is_none() {
         println!(
-            "Reading the local exercise version is not implemented for the {} track. Aborting.",
+            "Reading the track exercise version is not implemented for the {} track. Aborting.",
             track_name
         );
 
@@ -131,11 +131,11 @@ pub fn list_outdated_exercises(track_dir: &Path, spec_dir: Option<&Path>) -> xto
     for exercise in &mut exercises {
         let name = &exercise.name;
 
-        exercise.local_version = match version_reader.get_local_version(name, track_dir) {
-            Ok(local_version) => Some(local_version),
+        exercise.track_version = match version_reader.get_track_version(name, track_dir) {
+            Ok(track_version) => Some(track_version),
             Err(err) => {
                 println!(
-                    "Failed to get local version for the {} exercise: {}",
+                    "Failed to get track version for the {} exercise: {}",
                     name, err
                 );
                 None
@@ -157,9 +157,9 @@ pub fn list_outdated_exercises(track_dir: &Path, spec_dir: Option<&Path>) -> xto
     let outdated_exercises: Vec<&ExerciseInfo> = exercises
         .iter()
         .filter(|exercise| {
-            exercise.local_version.is_some()
+            exercise.track_version.is_some()
                 && exercise.canonical_version.is_some()
-                && exercise.local_version != exercise.canonical_version
+                && exercise.track_version != exercise.canonical_version
         })
         .collect();
 
@@ -170,10 +170,10 @@ pub fn list_outdated_exercises(track_dir: &Path, spec_dir: Option<&Path>) -> xto
             .iter()
             .enumerate()
             .map(|(idx, exercise)| format!(
-                "{:2}) {:25} local version: {:6} canonical version: {:6}",
+                "{:2}) {:25} track version: {:6} canonical version: {:6}",
                 idx + 1,
                 exercise.name,
-                exercise.local_version.as_ref().unwrap(),
+                exercise.track_version.as_ref().unwrap(),
                 exercise.canonical_version.as_ref().unwrap()
             ))
             .collect::<Vec<String>>()
